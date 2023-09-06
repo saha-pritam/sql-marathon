@@ -23,19 +23,20 @@ INSERT INTO employees (emp_id, emp_name, job_name, manager_id, hire_date, salary
 
 
 -- UPDATE STATEMENTS FOR EMPLOYEES TABLE FOR MAPPING MANAGERS OF EVERY EMPLOYEES
-update employees set manager_id=66928 where emp_id=68319;
-update employees set manager_id=67832 where emp_id=68319;
-update employees set manager_id=65646 where emp_id=68319;
-update employees set manager_id=64989 where emp_id=66928;
-update employees set manager_id=65271 where emp_id=66928;
-update employees set manager_id=66564 where emp_id=66928;
-update employees set manager_id=68454 where emp_id=66928;
-update employees set manager_id=68736 where emp_id=67858;
-update employees set manager_id=69000 where emp_id=66928;
-update employees set manager_id=69324 where emp_id=67832;
-update employees set manager_id=67858 where emp_id=65646;
-update employees set manager_id=69062 where emp_id=65646;
-update employees set manager_id=63679 where emp_id=69062;
+update employees set manager_id=68319 where emp_id=66928;
+update employees set manager_id=68319 where emp_id=67832;
+update employees set manager_id=68319 where emp_id=65646;
+update employees set manager_id=66928 where emp_id=64989;
+update employees set manager_id=66928 where emp_id=65271;
+update employees set manager_id=66928 where emp_id=66564;
+update employees set manager_id=66928 where emp_id=68454;
+update employees set manager_id=67858 where emp_id=68736;
+update employees set manager_id=66928 where emp_id=69000;
+update employees set manager_id=67832 where emp_id=69324;
+update employees set manager_id=65646 where emp_id=67858;
+update employees set manager_id=65646 where emp_id=69062;
+update employees set manager_id=69062 where emp_id=63679;
+update employees set manager_id=null where emp_id=68319;
 
 
 -- INSERT STATEMENTS FOR SALARY_GRADE TABLE
