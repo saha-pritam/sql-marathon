@@ -183,6 +183,167 @@ select emp_ID, emp_name, employees.dep_ID, salary, dep_location from employees j
 -- 61. Write a SQL query to find the employees of MARKETING department come from MELBOURNE or PERTH, are in grades 3 ,4, and 5 and have at least 25 years of experience. Return department ID, employee ID, employee name, salary, department name, department location and grade.
 select d.dep_ID, e.emp_ID, e.emp_name, e.salary, d.dep_name, d.dep_location, g.grade from employees e join department d on timestampdiff(YEAR,hire_date,curdate())>25 and d.dep_name='MARKETING' and d.dep_location in ('MELBOURNE','PERTH') and e.dep_id=d.dep_id join salary_grade g on e.salary>=g.min_salary and e.salary<=g.max_salary and g.grade in (3,4,5);
 
+-- 62 Write a SQL query to find those employees who are senior to their manager in terms of hiring date. Return complete information about the employees.
+select e1.emp_id, e1.emp_name, e1.job_name, e1.hire_date, e1.manager_id, e1.salary, e1.commission from employees e1 join employees e2 on e1.manager_id=e2.emp_id and e1.hire_date<e2.hire_date;
+
+-- 63 Write a SQL query to determine which employees have a grade of 4 and a salary between the minimum and maximum. Return all information of each employees and their grade and salary related details.
+select * from employees join salary_grade on salary>=min_salary and salary<=max_salary and grade=4;
+
+-- 64. Write a SQL query to find those employees who joined after 1991, excluding MARKER or ADELYN and in the departments PRODUCTION or AUDIT. Return employee name.
+select emp_name from employees natural join department where hire_date>'1991-12-31' and emp_name not in ('MARKER','ADELYN') and dep_name in ('PRODUCTION','AUDIT');
+
+-- 65. Write a SQL query to find the employees and their salaries. Sort the result-set in ascending order by salaries. Return complete information about the employees. 
+select * from employees order by salary;
+
+-- 66. Write a SQL query to list employees in ascending order on department ID and descending order on jobs. Return complete information about the employees. 
+select * from employees order by dep_id, job_name desc;
+
+-- 67. Write a SQL query to sort the unique jobs in descending order. Return job name. 
+select distinct job_name from employees order by job_name desc;
+
+-- 68. Write a SQL query to rank the employees according to their annual salary in ascending order. Return employee ID, employee name, monthly salary, salary/30 as Daily_Salary, and 12*salary as Anual_Salary.
+select emp_id, emp_name, salary as 'monthly salary', salary/30 as 'Daily_Salary', 12*salary as 'Anual_Salary' from employees order by salary;
+
+-- 69. Write a SQL query to find those employees who are either 'CLERK' or 'ANALYST’. Sort the result set in descending order on job_name. Return complete information about the employees. 
+select * from employees where job_name in ('CLERK','ANALYST') order by job_name desc;
+
+-- 70. Write a SQL query to find the department location of employee ‘CLARE’. Return department location.
+select dep_location from employees join department on employees.dep_id=department.dep_id and employees.emp_name='CLARE';
+
+-- 71. Write a SQL query to find those employees who joined on 1-MAY-91, or 3-DEC-91, or 19-JAN-90. Sort the result-set in ascending order by hire date. Return complete information about the employees.
+select * from employees where hire_date in ('1991-05-01','1991-12-03','1990-01-19') order by hire_date;
+
+-- 72. Write a SQL query to find those employees who earn less than 1000. Sort the result-set in ascending order by salary. Return complete information about the employees. 
+select * from employees where salary < 1000 order by salary;
+
+-- 73. Write a SQL query to list the employees in ascending order based on salary. Return complete information about the employees. 
+select * from employees order by salary;
+
+-- 74. Write a SQL query to list the employees in the ascending order by job title and in descending order by employee ID. Return complete information about the employees. 
+select * from employees order by job_name, emp_id desc;
+
+-- 75. Write a SQL query to list the unique jobs of department 2001 and 3001 in descending order. Return job name. 
+select distinct job_name from employees where dep_id in (2001,3001);
+
+-- 76. Write a SQL query to list all the employees except the PRESIDENT and the MANAGER in ascending order of salaries. Return complete information about the employees. 
+ select * from employees where job_name not in ('PRESIDENT','MANAGER') order by salary;
+ 
+ -- 77. Write a SQL query to find the employees whose annual salary is less than $25,000 per year. Sort the result set in ascending order of the salary. Return complete information about the employees. 
+ select * from employees where 12*salary<25000 order by salary;
+ 
+ -- 78. Write a SQL query to list the employees who works as a SALESMAN. Sort the result set in ascending order of annual salary. Return employee id, name, annual salary, daily salary of all the employees. 
+ select emp_id, emp_name, 12*salary as 'Annual salary', salary/30 as 'Daily salary' from employees where job_name='SALESMAN' order by salary;
+ 
+ -- 79. Write a SQL query to list the employee ID, name, hire date, current date and experience of the employees in ascending order on their experiences. 
+ select emp_id, emp_name,hire_date, curdate() as 'Cuurent Date', timestampdiff(year,hire_date,curdate()) as experience from employees order by hire_date desc;
+ 
+ -- 80. Write a SQL query to list the employees in ascending order of designations of those joined after the second half of 1991. 
+ select * from employees where hire_date between '1991-07-01' and '1991-12-31' order by job_name;
+
+-- 81. Write a SQL query to find the location of all the employees working in the FINANCE or AUDIT department. Sort the result-set in ascending order by department ID. Return complete information about the employees. 
+select * from employees natural join department where dep_name in ('FINANCE','AUDIT') order by dep_id;
+
+-- 82. Write a SQL query to find the employees along with grades in ascending order. Return complete information about the employees. 
+select emp_id, emp_name, job_name, manager_id, hire_date, salary, commission, grade from employees join salary_grade on salary between min_salary and max_salary order by grade;
+
+-- 83. Write a SQL query to find the employees according to the department in ascending order of department id. Return employee name, job name, department, salary, and grade.  
+select emp_name, job_name, dep_name, grade from employees natural join department join salary_grade on salary between min_salary and max_salary order by dep_id;
+
+-- 84. Write a SQL query to select all employees of all job types except CLERK and sort the results in descending order by salary. Return employee name, job name, salary, grade and department name. 
+select emp_name, job_name, dep_name, grade from employees natural join department join salary_grade on salary between min_salary and max_salary where job_name <> 'CLERK';
+
+-- 85. Write a SQL query to find those employees who work in the department 1001 or 2001. Return employee ID, name, salary, department, grade, experience, and annual salary. 
+select emp_id, emp_name, salary, dep_name, grade, timestampdiff(year,hire_date,curdate()) as experience, 12*salary as 'annual salary' from employees natural join department join salary_grade on salary between min_salary and max_salary where dep_id in (1001,2001);
+
+-- 86. Write a SQL query to list the details of the employees along with the details of their departments. 
+select * from employees natural join department;
+
+-- 87. Write a SQL query to list the employees who are senior to their MANAGERS. Return complete information about the employees. 
+select e1.emp_id, e1.emp_name, e1.job_name, e1.hire_date, e1.manager_id, e1.salary, e1.commission from employees e1 join employees e2 on e1.manager_id=e2.emp_id and e1.hire_date<e2.hire_date;
+
+-- 88. Write a SQL query to find those employees who work in the department 1001. Sort the result-set in ascending order by salary. Return employee ID, employee name, salary and department ID. 
+select emp_id, emp_name, salary, dep_id from employees where dep_id=1001 order by salary;
+
+-- 89. Write a SQL query to find the highest salary. Return highest salary. 
+select max(salary) as 'Highest Salary' from employees;
+
+-- 90. Write a SQL query to calculate the average salary and average total remuneration (salary and commission) for each type of job. Return job name, average salary and average total remuneration. 
+select job_name, avg(salary) as 'average salary', avg(salary+commission) as 'average total remuneration' from employees group by job_name;
+
+-- 91. Write a SQL query to calculate the total annual salary distributed across each job in 1991. Return job name, total annual salary. 
+select job_name, sum(12*salary) as 'total annual salary' from employees where date_format(hire_date,'%Y')='1991' group by job_name;
+
+-- 92. Write a SQL query to list the employee id, name, department id, location of all the employees. 
+select emp_id, emp_name, dep_id, dep_location from employees natural join department;
+
+-- 93. Write a SQL query to find those employees who work in the department ID 1001 or 2001. Return employee ID, employee name, department ID, department location, and department name. 
+select emp_id, emp_name, dep_id, dep_location, dep_name from employees natural join department where dep_id in (1001,2001);
+
+-- 94. Write a SQL query to find those employees whose salary is in the range of minimum and maximum salary (Begin and end values are included.). Return employee ID, name, salary and grade. 
+select emp_id, emp_name, salary, grade from employees join salary_grade on salary between min_salary and max_salary;
+
+-- 95. Write a SQL query to create a list of the managers and the number of employees they supervise. Sort the result set in ascending order on manager. Return manager ID and number of employees under them. 
+select manager_id, count(emp_id) as 'number of employees under them' from employees where manager_id is not null group by manager_id order by manager_id;
+
+-- 96. Write a SQL query to count the number of employees in each designation of a department. Return department id, job name and number of employees. 
+select dep_id, job_name, count(emp_id) as 'number of employees' from employees group by dep_id, job_name;
+
+-- 97. Write a SQL query to identify the departments in which at least two employees are employed. Return department id, number of employees. 
+select dep_id, count(emp_id) as 'number of employees' from employees group by dep_id having count(emp_id)>=2;
+
+-- 98. Write a SQL query to list the grade, number of employees, and maximum salary of each grade. 
+select grade, max(salary), count(emp_id) from employees join salary_grade on salary between min_salary and max_salary group by grade;
+
+-- 99. Write a SQL query to identify departments with at least two SALESMEN in each grade. Return department name, grade and number of employees.
+select dep_name, grade, count(emp_id) as 'number of employees' from employees natural join department join salary_grade on salary between min_salary and max_salary where job_name='SALESMAN' group by dep_name, grade having count(emp_id)>=2;
+
+-- 100. Write a SQL query to identify departments with fewer than four employees. Return department ID, number of employees. 
+select dep_id, count(emp_id) as 'Number of employees' from employees group by dep_id having count(emp_id)<4;
+
+-- 101. Write a SQL query to find which departments have at least two employees. Return department name, number of employees. 
+select dep_name, count(emp_id) as 'Number of employees' from employees natural join department group by dep_name having count(emp_id)>=2;
+
+-- 102. Write a SQL query to check whether the employees ID are unique or not. Return employee id, number of employees. 
+select emp_id, count(*) as 'Number of employees'  from employees group by emp_id;
+
+-- 103. Write a SQL query to find number of employees and average salary. Group the result set on department id and job name. Return number of employees, average salary, department ID, and job name. 
+select dep_id, job_name, count(emp_id) as 'number of employees', avg(salary) as 'average salary' from employees group by dep_id,job_name;
+
+-- 104. Write a SQL query to identify those employees whose names begin with 'A' and are six characters long. Return employee name. 
+select emp_name from employees where emp_name like 'A%' and length(emp_name)=6;
+
+-- 105. Write a SQL query to find those employees whose name is six characters in length and the third character must be 'R'. Return complete information about the employees. 
+select * from employees where emp_name like '__R%' and length(emp_name)=6;
+
+-- 106. Write a SQL query to find those employees whose name is six characters in length, starting with 'A' and ending with 'N'. Return number of employees. 
+select count(emp_id) as 'number of employees' from employees where emp_name like 'A%N' and length(emp_name)=6;
+
+-- 107. Write a SQL query to find those employees who joined in the month of where the second letter is 'a'. Return number of employees. 
+ select count(emp_id) as 'number of employees' from employees where date_format(hire_date,'%M') like '_a%';
+ 
+-- 108. Write a SQL query to find those employees whose names contain the character set 'AR' together. Return complete information about the employees. 
+select * from employees where emp_name like '%AR%';
+
+-- 109. Write a SQL query to find those employees who joined in 90's. Return complete information about the employees. 
+ select * from employees where hire_date between '1990-01-01' and '1999-12-31';
+ 
+-- 110. Write a SQL query to find those employees whose ID not start with the digit 68. Return employee ID, employee name. 
+select emp_id, emp_name from employees where emp_id div 1000 <> 68;
+
+-- 111. Write a SQL query to find those employees whose names contain the letter 'A’. Return complete information about the employees. 
+select * from employees where emp_name like '%A%';
+
+-- 112. Write a SQL query to find those employees whose name ends with 'S' and six characters long. Return complete information about the employees. 
+select * from employees where emp_name like '%s' and length(emp_name)=6;
+
+-- 113. Write a SQL query to find those employees who joined in any month, but the month name contain the character ‘A’. Return complete information about the employees. 
+select * from employees where date_format(hire_date,'%M') like '%A%';
+
+-- 114. Write a SQL query to find those employees who joined in any month, but the name of the month contain the character ‘A’ in second position. Return complete information about the employees. 
+ select * from employees where date_format(hire_date,'%M') like '_A%';
+
+
+
 
 
 
