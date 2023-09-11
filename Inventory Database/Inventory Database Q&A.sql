@@ -60,3 +60,36 @@ select * from orders where not (ord_date='2012-08-17' or customer_id>3005 and pu
 
 -- 21. Write a SQL query that displays order number, purchase amount, and the achieved and unachieved percentage (%) for those orders that exceed 50% of the target value of 6000. 
 select ord_no, purch_amt, purch_amt/6000*100 as 'Achieved percentage (%)', 100-purch_amt/6000*100 as 'unachieved percentage (%)' from orders where purch_amt/6000*100>50;
+
+-- 22. Write a SQL query to find the details of those salespeople who come from the 'Paris' City or 'Rome' City. Return salesman_id, name, city, commission. 
+select salesman_id, name, city, commission from salesman where city in ('Paris','Rome');
+
+-- 23. Write a SQL query to find the details of the salespeople who come from either 'Paris' or 'Rome'. Return salesman_id, name, city, commission. 
+select salesman_id, name, city, commission from salesman where city in ('Paris','Rome');
+
+-- 24. Write a SQL query to find the details of those salespeople who live in cities other than Paris and Rome. Return salesman_id, name, city, commission. 
+select salesman_id, name, city, commission from salesman where city not in ('Paris','Rome');
+
+-- 25. Write a SQL query to retrieve the details of all customers whose ID belongs to any of the values 3007, 3008 or 3009. Return customer_id, cust_name, city, grade, and salesman_id. 
+select customer_id, cust_name, city, grade, salesman_id from customer where customer_id in (3007, 3008, 3009);
+
+-- 26. Write a SQL query to find salespeople who receive commissions between 0.12 and 0.14 (begin and end values are included). Return salesman_id, name, city, and commission. 
+select salesman_id, name, city, commission from salesman where commission between 0.12 and 0.14;
+
+-- 27. Write a SQL query to select orders between 500 and 4000 (begin and end values are included). Exclude orders amount 948.50 and 1983.43. Return ord_no, purch_amt, ord_date, customer_id, and salesman_id. 
+select ord_no, purch_amt, ord_date, customer_id, salesman_id from orders where purch_amt between 500 and 4000 and purch_amt not in (948.50,1983.43);
+
+-- 28. Write a SQL query to retrieve the details of the salespeople whose names begin with any letter between 'A' and 'L' (not inclusive). Return salesman_id, name, city, commission. 
+select salesman_id, name, city, commission from salesman where substring(name,1,1) between 'B' and 'K';
+
+-- 29. Write a SQL query to find the details of all salespeople except those whose names begin with any letter between 'A' and 'L' (not inclusive). Return salesman_id, name, city, commission. 
+select salesman_id, name, city, commission from salesman where  substring(name,1,1) not between 'B' and 'K';
+
+-- 30. Write a SQL query to retrieve the details of the customers whose names begins with the letter 'B'. Return customer_id, cust_name, city, grade, salesman_id. 
+select customer_id, cust_name, city, grade, salesman_id from customer where cust_name like 'B%';
+
+-- 31. Write a SQL query to find the details of the customers whose names end with the letter 'n'. Return customer_id, cust_name, city, grade, salesman_id. 
+select customer_id, cust_name, city, grade, salesman_id from customer where cust_name like '%n';
+
+-- 32. Write a SQL query to find the details of those salespeople whose names begin with ‘N’ and the fourth character is 'l'. Rests may be any character. Return salesman_id, name, city, commission.
+ select salesman_id, name, city, commission from salesman where name like 'N__l%';
