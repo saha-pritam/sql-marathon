@@ -252,3 +252,54 @@ select * from salesman s, customer c where s.city is not null and c.grade is not
 
 -- 85. Write a SQL statement to make a Cartesian product between salesman and customer i.e. each salesman will appear for all customers and vice versa for those salesmen who must belong to a city which is not the same as his customer and the customers should have their own grade.    
 select * from salesman s, customer c where s.city is not null and s.city<>c.city and c.grade is not null;
+
+-- 86. Create a view for those salespeople who belong to the city of New York.
+create view v1 as select * from salesman where city='New York';
+select * from v1;
+
+-- 87. Create a view for all salespersons. Return salesperson ID, name, and city.
+create view v2 as select salesman_id, name, city from salesman;
+select * from v2; 
+
+-- 88. Create a view that counts the number of customers in each grade
+create view v3 as select  grade, count(customer_id) from customer group by grade;
+select * from v3;
+
+-- 89. Create a view to count the number of unique customers, compute the average and the total purchase amount of customer orders by each date.
+create view v4 as select count(distinct customer_id), avg(purch_amt), ord_date from orders group by ord_date;
+select * from v4;
+
+-- 90. Create a view to return order no, purchase amount, salesperson ID, name, customer name.
+create view v5 as select ord_no, purch_amt, salesman.salesman_id, name, cust_name from salesman join orders using(salesman_id) join customer using(customer_id);
+select * from v5;
+
+-- 91. Create a view to find all the customers who have the highest grade. Return all the fields of customer.
+create view v6 as select * from customer where grade = (select max(grade) from customer);
+select * from v6;
+
+-- 92. Create a view to count the number of salespeople in each city. Return city, number of salespersons
+create view v7 as select city, count(salesman_id) from salesman group by city;
+select * from v7;
+
+-- 93. Create a view to identify salespeople who work with multiple clients. Return all the fields of salesperson.
+create view v8 as select s.salesman_id, s.name, s.city, s.commission from salesman s where  (select count(*) from customer where salesman_id=s.salesman_id)>1;
+select * from v8;
+
+-- 94. Create a view to compute the average purchase amount and total purchase amount for each salesperson. Return name, average purchase and total purchase amount. (Assume all names are unique.).
+create view v9 as select name, avg(purch_amt), sum(purch_amt) from orders natural join salesman group by name;
+select * from v9;
+
+-- 95. Create a view to display the number of orders per day. Return order date and number of orders.
+create view v10 as select ord_date, count(ord_no) from orders group by ord_date;
+select * from v10;
+
+-- 96. Create a view to find the salespeople who placed orders on October 10th, 2012. Return all the fields of salesperson.
+create view v11 as select s.salesman_id, s.name, s.city, s.commission from orders o join salesman s using(salesman_id) where ord_date = '2012-10-10';
+select * from v11;
+
+-- 97. Create a view to find the salespersons who issued orders on either August 17th, 2012 or October 10th, 2012. Return salesperson ID, order number and customer ID.
+create view v12 as select salesman_id, ord_no, customer_id from orders where ord_date in ('2012-08-17','2012-10-10');
+select * from v12;
+
+-- 98. Write a SQL query to find all salespeople and customers located in the city of London.
+select name from salesman where city='London' union select cust_name from customer where city='London';
