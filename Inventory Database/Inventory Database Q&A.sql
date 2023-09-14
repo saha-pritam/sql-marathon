@@ -208,4 +208,47 @@ select ord_no, cust_name, commission , purch_amt * commission as 'Commission Amo
 -- 70. Write a SQL query to find those customers who placed orders on October 5, 2012. Return customer_id, cust_name, city, grade, salesman_id, ord_no, purch_amt, ord_date, customer_id and salesman_id.
 select c.customer_id, c.cust_name, c.city, c.grade, o.salesman_id, o.ord_no, o.purch_amt, o.ord_date, o.customer_id, o.salesman_id from customer c natural join orders o where o.ord_date='2012-10-05';
 
+-- 71. Write a SQL query to find the salesperson and customer who reside in the same city. Return Salesman, cust_name and city. 
+select name, cust_name, city from salesman join customer using(city);
+
+-- 72. Write a SQL query to find those orders where the order amount exists between 500 and 2000. Return ord_no, purch_amt, cust_name, city. 
+select ord_no, purch_amt, cust_name, city from orders natural join customer where purch_amt between 500 and 2000;
+
+-- 73. Write a SQL query to find the salesperson(s) and the customer(s) he represents. Return Customer Name, city, Salesman, commission. 
+select cust_name, customer.city, name, commission from customer join salesman using(salesman_id);
+
+-- 74. Write a SQL query to find salespeople who received commissions of more than 12 percent from the company. Return Customer Name, customer city, Salesman, commission. 
+select cust_name, customer.city, name, commission from customer join salesman using(salesman_id) where commission>0.12;
  
+-- 75. Write a SQL query to locate those salespeople who do not live in the same city where their customers live and have received a commission of more than 12% from the company. Return Customer Name, customer city, Salesman, salesman city, commission. 
+select cust_name, customer.city, name, salesman.city, commission from customer join salesman using(salesman_id) where commission>0.12 and customer.city<>salesman.city;
+
+-- 76. Write a SQL query to find the details of an order. Return ord_no, ord_date, purch_amt, Customer Name, grade, Salesman, commission 
+select ord_no, ord_date, purch_amt, cust_Name, grade, name, commission from customer join orders using(customer_id) join salesman on orders.salesman_id=salesman.salesman_id;
+
+-- 77. Write a SQL statement to join the tables salesman, customer and orders so that the same column of each table appears once and only the relational rows are returned. 
+select ord_no, ord_date, purch_amt, customer.customer_id, cust_Name, customer.city, grade, salesman.salesman_id, name, salesman.city, commission from customer join orders using(customer_id) join salesman on orders.salesman_id=salesman.salesman_id;
+
+-- 78. Write a SQL query to display the customer name, customer city, grade, salesman, salesman city. The results should be sorted by ascending customer_id. 
+select c.cust_name, c.city, c.grade, s.name, s.city from customer c join salesman s using(salesman_id) order by c.customer_id;
+
+-- 79. Write a SQL query to find those customers with a grade less than 300. Return cust_name, customer city, grade, Salesman, salesmancity. The result should be ordered by ascending customer_id. 
+select c.cust_name, c.city, c.grade, s.name, s.city from customer c join salesman s using(salesman_id) where c.grade<300 order by c.customer_id;
+
+-- 80. Write a SQL statement to make a report with customer name, city, order number, order date, and order amount in ascending order according to the order date to determine whether any of the existing customers have placed an order or not 
+select cust_name, city, ord_no, ord_date, purch_amt from customer left join orders using(customer_id) order by ord_date;
+
+-- 81. Write a SQL statement to generate a list in ascending order of salespersons who work either for one or more customers or have not yet joined any of the customers. 
+select * from salesman left join customer using(salesman_id) order by salesman_id;
+
+-- 82. Write a SQL query to list all salespersons along with customer name, city, grade, order number, date, and amount. 
+select cust_name, customer.city, grade, ord_no, ord_date, purch_amt from salesman left join orders using(salesman_id) left join customer on orders.customer_id=customer.customer_id;
+
+-- 83. Write a SQL query to combine each row of the salesman table with each row of the customer table. 
+select s.salesman_id,s.name,s.city,s.commission,c.customer_id,c.cust_name,c.city,c.grade from salesman s, customer c;
+
+-- 84. Write a SQL statement to create a Cartesian product between salesperson and customer, i.e. each salesperson will appear for every customer and vice versa for those salesmen who belong to a city and customers who require a grade. 
+select * from salesman s, customer c where s.city is not null and c.grade is not null order by s.salesman_id;
+
+-- 85. Write a SQL statement to make a Cartesian product between salesman and customer i.e. each salesman will appear for all customers and vice versa for those salesmen who must belong to a city which is not the same as his customer and the customers should have their own grade.    
+select * from salesman s, customer c where s.city is not null and s.city<>c.city and c.grade is not null;
