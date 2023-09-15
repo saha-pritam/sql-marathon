@@ -416,3 +416,153 @@ select * from employees where date_format(hire_date,'%Y')='1991' and job_name in
 
 -- 139. Write a SQL query to find the most senior employee of grade 4 or 5, work under KAYLING. Return complete information about the employees.
 select emp_id, emp_name, job_name, manager_id, hire_date, salary, commission from employees join salary_grade on salary between min_salary and max_salary and grade in (4,5) where manager_id = (select emp_id from employees where emp_name='KAYLING') and hire_date = (select min(hire_date) from employees join salary_grade on salary between min_salary and max_salary and grade in (4,5) where manager_id = (select emp_id from employees where emp_name='KAYLING'));
+
+-- 140. Write a SQL query to compute the total salary of the designation MANAGER. Return total salary.
+select sum(salary) from employees where job_name='Manager';
+
+-- 141. Write a SQL query to compute the total salary of employees of grade 3. Return total salary.
+select sum(salary) from employees join salary_grade on salary between min_salary and max_salary and grade=3;
+
+-- 142. Write a SQL query to find those employees of department 1001 and whose salary is more than the average salary of employees in department 2001. Return complete information about the employees.
+select * from employees where dep_id=1001 and salary>(select avg(salary) from employees where dep_id=2001);
+
+-- 143. Write a SQL query to find those departments where maximum number of employees work. Return department ID, department name, location and number of employees.
+select d.dep_id, d.dep_name, d.dep_location, count(e.emp_id) as 'number of employees' from employees e natural join department d group by dep_id having count(emp_id) = (select max(employee_count) from (select count(emp_id) as employee_count from employees group by dep_id) as temp);
+
+-- 144. Write a SQL query to find those employees whose manager is JONAS. Return complete information about the employees.
+select e1.emp_id, e1.emp_name, e1.hire_date, e1.job_name, e1.manager_id, e1.salary, e1.commission from employees e1 join employees e2 on e1.manager_id=e2.emp_id and e2.emp_name='Jonas';
+
+-- 145. Write a SQL query to find those employees who are not working in the department MARKETING. Return complete information about the employees.
+select e1.emp_id, e1.emp_name, e1.hire_date, e1.job_name, e1.manager_id, e1.salary, e1.commission, e1.dep_id from employees e1 join department d on e1.dep_id=d.dep_id and d.dep_name<>'MARKETING';
+
+-- 146. Write a SQL query to find those employees who are managing other employees. Return employee name, job name, department name, and location.
+select e1.emp_name, e1.job_name, d.dep_name, d.dep_location from employees e1 natural join department d where e1.emp_id in (select distinct manager_id from employees where manager_id is not null);
+
+-- 147. Write a SQL query to find those employees who receive the highest salary of each department. Return employee name and department ID.
+select emp_name, dep_id from employees where (dep_id,salary) in (select dep_id, max(salary) from employees group by dep_id);
+
+-- 148. Write a SQL query to find those employees whose salary is equal or more to the average of maximum and minimum salary. Return complete information about the employees.
+select * from employees where salary >= (select (max(salary)+min(salary))/2 from employees);
+
+-- 149. Write a SQL query to find those managers whose salary is more than the average salary of his employees. Return complete information about the employees.
+select distinct e2.emp_id, e2.emp_name, e2.job_name, e2.manager_id, e2.hire_date, e2.salary, e2.commission, e2.dep_id from employees e1 join employees e2 on e1.manager_id=e2.emp_id where e2.salary > (select avg(salary) from employees e3 where e3.manager_id=e2.emp_id);
+
+-- 150. Write a SQL query to find those employees whose salary is less than the salary of his manager but more than the salary of any other manager. Return complete information about the employees.
+select e1.emp_id, e1.emp_name, e1.job_name, e1.manager_id, e1.hire_date, e1.salary, e1.commission, e1.dep_id from employees e1 join employees e2 on e1.manager_id=e2.emp_id where e1.salary<e2.salary and e1.salary > any (select salary from employees where emp_id in (select distinct manager_id from employees where manager_id is not null));
+
+-- 151. Write a SQL query to compute department wise average salary of employees. Return employee name, average salary, department ID.
+select emp_name, (select avg(e2.salary) from employees e2 where e2.dep_id=e1.dep_id) as 'Average salary of department', dep_id from employees e1;
+
+-- 152. Write a SQL query to find five lowest paid workers. Return complete information about the employees.
+select * from employees order by salary limit 5;
+
+-- 153. Write a SQL query to find those managers who are not working under the PRESIDENT. Return complete information about the employees. 
+select e2.emp_id, e2.emp_name, e2.job_name, e2.manager_id, e2.hire_date, e2.salary, e2.commission, e2.dep_id from employees e1 join employees e2 on e1.manager_id=e2.emp_id join employees e3 on e2.manager_id=e3.emp_id and e3.job_name<>'PRESIDENT';
+
+-- 154. Write a SQL query to find those departments where the number of employees is equal to the number of characters in the department name. Return complete information about the department.
+select dep_id, dep_name, dep_location from employees natural join department group by dep_id,dep_name,dep_location having count(emp_id)=length(dep_name);
+
+-- 155. Write a SQL query to find those departments where the highest number of employees works. Return department name.
+select d.dep_name from employees e natural join department d group by dep_id having count(emp_id) = (select max(employee_count) from (select count(emp_id) as employee_count from employees group by dep_id) as temp);
+
+-- 156. Write a SQL query to find those employees who joined in the company on the same date. Return complete information about the employees.
+select distinct e1.emp_id, e1.emp_name, e1.job_name, e1.manager_id, e1.hire_date, e1.salary, e1.commission, e1.dep_id from employees e1, employees e2 where e1.emp_id<>e2.emp_id and e1.hire_date=e2.hire_date;
+
+-- 157. Write a SQL query to find those departments where more than average number of employees works. Return department name.
+select d.dep_name from employees e natural join department d group by dep_id having count(emp_id) > (select avg(employee_count) from (select count(emp_id) as employee_count from employees group by dep_id) as temp);
+
+-- 158. Write a SQL query to find those managers who handle maximum number of employees. Return managers name, number of employees.
+select (select e2.emp_name from employees e2 where e2.emp_id=e1.manager_id) as manager_name, count(emp_id) from employees e1 group by manager_id having count(emp_id) = (select max(employee_count) from (select count(emp_id) as employee_count from employees group by manager_id) as temp);
+
+-- 159. Write a SQL query to find those managers who receive less salary then the employees work under them. Return complete information about the employees.
+select distinct e2.emp_id, e2.emp_name, e2.job_name, e2.manager_id, e2.hire_date, e2.salary, e2.commission, e2.dep_id  from employees e1 join employees e2 on e1.manager_id=e2.emp_id and e1.salary>e2.salary;
+
+-- 160. Write a SQL query to find those employees who are sub-ordinates of BLAZE. Return complete information about the employees.
+select * from employees where manager_id=(select emp_id from employees where emp_name='BLAZE');
+
+-- 161. Write a SQL query to list the name of the employees for their manager JONAS and the name of the manager of JONAS.
+select e1.emp_name, e2.emp_name, e3.emp_name from employees e1 join employees e2 on e1.manager_id=e2.emp_id and e2.emp_name='JONAS' join employees e3 on e2.manager_id=e3.emp_id;
+
+-- 162. Write a SQL query to find those employees who receive minimum salary for a designation. Sort the result-set in ascending order by salary. Return complete information about the employees.
+select e1.emp_id, e1.emp_name, e1.job_name, e1.manager_id, e1.hire_date, e1.salary, e1.commission, e1.dep_id from employees e1 where e1.salary = (select min(salary) from employees e2 where e2.job_name=e1.job_name) order by e1.salary;
+
+-- 163. Write a SQL query to find those employees who receive maximum salary for a designation. Sort the result-set in descending order by salary. Return complete information about the employees.
+select e1.emp_id, e1.emp_name, e1.job_name, e1.manager_id, e1.hire_date, e1.salary, e1.commission, e1.dep_id from employees e1 where e1.salary = (select max(salary) from employees e2 where e2.job_name=e1.job_name) order by e1.salary desc;
+
+-- 164. Write a SQL query to find recently hired employees of every department. Sort the result-set in descending order by hire date. Return complete information about the employees.
+select e1.emp_id, e1.emp_name, e1.job_name, e1.manager_id, e1.hire_date, e1.salary, e1.commission, e1.dep_id from employees e1 where e1.hire_date = (select max(hire_date) from employees e2 where e2.dep_id=e1.dep_id) order by e1.hire_date desc;
+
+-- 165. Write a SQL query to find those employees who receive a salary higher than the average salary of their department. Sort the result-set in ascending order by department ID. Return employee name, salary, and department ID.
+select e1.emp_name, e1.salary, e1.dep_id from employees e1 where e1.salary > (select avg(salary) from employees e2 where e2.dep_id=e1.dep_id) order by e1.dep_id;
+
+-- 166. Write a SQL query to find those employees who earn a commission and receive maximum salary. Return complete information about the employees.
+select * from employees where commission is not null and salary = (select max(salary) from employees where commission is not null);
+
+-- 167. Write a SQL query to find those employees who do not work in the department 1001 but work in the same designation and salary as the employees in department 3001. Return employee name, job name and salary.
+select emp_name, job_name, salary from employees where dep_id<>1001 and job_name in (select job_name from employees where dep_id=3001) and salary in (select salary from employees where dep_id=3001);
+
+-- 168. Write a SQL query to find those employees who get a commission percent and works as a SALESMAN and earn maximum net salary. Return department ID, name, designation, salary, and net salary (salary+ commission).
+select * from employees where commission is not null and job_name='SALESMAN' and salary+commission = (select max(salary+commission) from employees where commission is not null and job_name='SALESMAN');
+
+-- 169. Write a SQL query to find those employees who gets a commission and earn the second highest net salary (salary + commission). Return department id, employee name, designation, salary, and net salary.
+select * from employees where commission is not null and salary+commission = (select max(salary+commission) from employees where commission is not null and salary+commission < (select max(salary+commission) from employees where commission is not null));
+
+-- 170. Write a SQL query to find those departments where the average salary is less than the averages for all departments. Return department ID, average salary.
+select dep_id,avg(salary) from employees group by dep_id having avg(salary) < (select avg(salary) from employees);
+
+-- 171. Write a SQL query to find the unique departments where at least one employee is working. Return complete information about the department.
+select distinct d.dep_id, d.dep_name, d.dep_location from employees e natural join department d;
+
+-- 172. Write a SQL query to list the details of the employees working at PERTH.
+select e.emp_id, e.emp_name, e.job_name, e.manager_id, e.hire_date, e.salary, e.commission, e.dep_id from employees e join department d on e.dep_id=d.dep_id and d.dep_location='PERTH';
+
+-- 173. Write a SQL query to list the employees of grade 2 or 3 and the department where he or she works, is located in the city PERTH. Return complete information about the employees.
+select e.emp_id, e.emp_name, e.job_name, e.manager_id, e.hire_date, e.salary, e.commission, e.dep_id from employees e join department d on e.dep_id=d.dep_id and d.dep_location='PERTH' join salary_grade sg on e.salary between sg.min_salary and sg.max_salary and sg.grade in (2,3);
+
+-- 174. Write a SQL query to find those employees whose designation is same as the designation of ADELYN or the salary is more than the salary of WADE. Return complete information about the employees.
+select * from employees where job_name=(select job_name from employees where emp_name='ADELYN') or salary>(select salary from employees where emp_name='WADE');
+
+-- 175. Write a SQL query to find those employees of department 1001 whose salary is more than the salary of ADELYN. Return complete information about the employees.
+select * from employees where dep_id=1001 and salary>(select salary from employees where emp_name='ADELYN');
+
+-- 176. Write a SQL query to find those managers who are senior to KAYLING and who are junior to SANDRINE. Return complete information about the employees.
+select * from employees where emp_id in (select distinct manager_id from employees where manager_id is not null) and hire_date < (select hire_date from employees where emp_name='KAYLING') and hire_date > (select hire_date from employees where emp_name='SANDRINE'); 
+
+-- 177. Write a SQL query to find those employees who work in the department where KAYLING works. Return employee ID, employee name, department location, salary department name.
+select emp_id, emp_name, dep_location, salary, dep_name from employees natural join department where dep_id=(select dep_id from employees where emp_name='KAYlING');
+
+-- 178. Write a SQL query to find those employees whose salary grade is greater than the grade of MARKER. Return complete information about the employees.
+select * from employees join salary_grade on salary between min_salary and max_salary where grade>(select grade from employees join salary_grade on emp_name='MARKER' and salary between min_salary and max_salary); 
+
+-- 179. Write a SQL query to find those employees whose grade same as the grade of TUCKER or experience is more than SANDRINE and who are belonging to SYDNEY or PERTH. Return complete information about the employees.
+select * from employees join salary_grade on salary between min_salary and max_salary where grade=(select grade from employees join salary_grade on emp_name='TUCKER' and salary between min_salary and max_salary) and dep_id in (select dep_id from department where dep_location in ('SYDNEY','PERTH'));
+
+-- 180. Write a SQL query to find those employees whose salary is same as any one of the employee. Return complete information about the employees.
+select e1.emp_id, e1.emp_name, e1.hire_date, e1.job_name, e1.manager_id, e1.salary, e1.commission, e1.dep_id from employees e1, employees e2 where e1.emp_id<>e2.emp_id and e1.salary=e2.salary;
+
+-- 181. Write a SQL query to find compute the total remuneration (salary + commission) of all sales person of MARKETING department. Return complete information about the employees.
+select emp_id, emp_name, hire_date, job_name, manager_id, salary, commission, employees.dep_id, salary+ifnull(commission,0) as 'total remuneration' from employees join department on employees.dep_id=department.dep_id and dep_name='MARKETING';
+
+-- 182. Write a SQL query to find the recently hired employees of department 3001. Return complete information about the employees.
+select * from employees where dep_id=3001 and hire_date = (select max(hire_date) from employees where dep_id=3001);
+
+-- 183. Write a SQL query to find the highest paid employees of PERTH who joined before recently hired employee of grade 2. Return complete information about the employees.
+select emp_id, emp_name, hire_date, job_name, manager_id, salary, commission, employees.dep_id from employees join department on employees.dep_id=department.dep_id and dep_location='PERTH' where hire_date < ( select max(hire_date) from employees join salary_grade on salary between min_salary and max_salary and grade=2) and salary=(select max(salary) from employees join department on employees.dep_id=department.dep_id and dep_location='PERTH' where hire_date < ( select max(hire_date) from employees join salary_grade on salary between min_salary and max_salary and grade=2));
+
+-- 184. Write a SQL query to find the highest paid employees work under KAYLING. Return complete information about the employees.
+select e1.emp_id, e1.emp_name, e1.hire_date, e1.job_name, e1.manager_id, e1.salary, e1.commission, e1.dep_id from employees e1 join employees e2 on e1.manager_id=e2.emp_id and e2.emp_name='KAYLING' where e1.salary = (select max(e3.salary) from employees e3 join employees e4 on e3.manager_id=e4.emp_id and e4.emp_name='KAYLING');
+
+-- 185. Write a SQL query to find those employees whose net pay are higher than or equal to the salary of any other employee in the company. Return employee name, salary, and commission.
+select emp_name, salary, commission from employees where salary >= any (select salary from employees);
+
+-- 186. Write a SQL query to find those employees whose salaries are greater than the salaries of their managers. Return complete information about the employees.
+select e1.emp_id, e1.emp_name, e1.hire_date, e1.job_name, e1.manager_id, e1.salary, e1.commission, e1.dep_id from employees e1 join employees e2 on e1.manager_id=e2.emp_id and e1.salary>e2.salary;
+
+-- 187. Write a SQL query to find the maximum average salary out of all job except for PRESIDENT.
+select max(temp.average) from (select avg(salary) as 'average' from employees where job_name <> 'PRESIDENT' group by job_name) as temp;
+
+-- 188. Write a SQL query to count the number of employees who work as a manager. Return number of employees.
+select count(distinct manager_id) from employees;
+
+-- 189. Write a SQL query to find those departments where no employee works. Return department ID.
+select dep_id from department left join employees using (dep_id) group by dep_id having count(emp_id)=0;
