@@ -341,9 +341,78 @@ select * from employees where date_format(hire_date,'%M') like '%A%';
 
 -- 114. Write a SQL query to find those employees who joined in any month, but the name of the month contain the character ‘A’ in second position. Return complete information about the employees. 
  select * from employees where date_format(hire_date,'%M') like '_A%';
+ 
+-- 115. Write a SQL query to find the employees who manage other employees. Return complete information about the managers.
+select * from employees where emp_id in (select distinct manager_id from employees where manager_id is not null);
+ 
+-- 116. Write a SQL query to compute the experience of all the employees who manage other employees. Return employee ID, employee name, job name, joining date, and experience.
+select emp_id, emp_name, job_name, hire_date, timestampdiff(year,hire_date,curdate()) as experience from employees where emp_id in (select distinct manager_id from employees where manager_id is not null);
+ 
+-- 117. Write a SQL query to find those employees who work as 'MANAGERS' and 'ANALYST' and working in ‘SYDNEY’ or ‘PERTH’ with an experience more than 5 years without receiving the commission. Sort the result-set in ascending order by department location. Return employee ID, employee name, salary, and department name.
+ select e.emp_id, e.emp_name, e.salary, d.dep_name from employees e natural join department d where e.job_name in ('MANAGER','ANALYST') and d.dep_location in ('Sydney','Perth') and timestampdiff(year,e.hire_date,curdate())>5 and e.commission is null order by d.dep_location;
+ 
+-- 118. Write a SQL query to find those employees work at SYDNEY or working in the FINANCE department with an annual salary above 28000, but the monthly salary should not be 3000 or 2800 and who do not work as a MANAGER and whose ID contain a digit of '3' or '7' in 3rd position. Sort the result-set in ascending order by department ID and descending order by job name. Return employee ID, employee name, salary, department name, department location, department ID, and job name.
+select * from employees natural join department where (dep_location='SYDNEY' or dep_name='FINANCE') and 12*salary>28000 and salary not in (3000,2800) and job_name <> 'MANAGER' and (convert(emp_id,char(5)) like '__3%' or convert(emp_id,char(5)) like '__7%') order by dep_id, job_name desc;
 
+-- 119. Write a SQL query to find the employees of grade 2 and 3.Return all the information of employees and salary details.
+select * from employees e join salary_grade sg on sg.grade in (2,3) and e.salary between sg.min_salary and sg.max_salary;
 
+-- 120. Write a SQL query to find those employees of grade 4 or 5 and who work as ANALYST or MANAGER. Return complete information about the employees.
+select * from employees e join salary_grade sg on sg.grade in (4,5) and e.salary between sg.min_salary and sg.max_salary and e.job_name in ('MANAGER','ANALYST');
 
+-- 121. Write a SQL query to find those employees whose salary is more than the salary of JONAS. Return complete information about the employees.
+select * from employees where salary > (select salary from employees where emp_name='JONAS');
 
+-- 122. Write a SQL query to find those employees who work as same designation of FRANK. Return complete information about the employees.
+select * from employees where job_name = (select job_name from employees where emp_name='FRANK');
 
+-- 123. Write a SQL query to find those employees who are senior to ADELYN. Return complete information about the employees.
+select * from employees where hire_date < (select hire_date from employees where emp_name='ADELYN');
 
+-- 124. Write a SQL query to find those employees of department ID 2001 and whose designation is same as of employees of department ID 1001. Return complete information about the employees.
+select * from employees where dep_id=2001 and job_name in (select job_name from employees where dep_id=1001);
+
+-- 125. Write a SQL query to find those employees whose salary is the same as the salary of FRANK or SANDRINE. Sort the result-set in descending order by salary. Return complete information about the employees.
+select * from employees where salary in (select salary from employees where emp_name in ('FRANK','SANDRINE')) order by salary desc;
+
+-- 126. Write a SQL query to find those employees whose designation are the same as the designation of MARKER or salary is more than the salary of ADELYN. Return complete information about the employees.
+select * from employees where job_name=(select job_name from employees where emp_name='MARKER') or salary>(select salary from employees where emp_name='ADELYN');
+
+-- 127. Write a SQL query to find those employees whose salary is more than the total remuneration (salary + commission) of the designation SALESMAN. Return complete information about the employees.
+select * from employees where salary > all ( select salary+ifnull(commission,0) from employees where job_name='SALESMAN');
+
+-- 128. Write a SQL query to find those employees who are senior to BLAZE and working at PERTH or BRISBANE. Return complete information about the employees.
+select * from employees where hire_date < (select hire_date from employees where emp_name='BLAZE') and dep_id in (select dep_id from department where dep_location in ('PERTH','BRISBANE'));
+
+-- 129. Write a SQL query to find those employees of grade 3 and 4 and work in the department of FINANCE or AUDIT and whose salary is more than the salary of ADELYN and experience is more than FRANK. Return complete information about the employees.
+select * from employees join salary_grade on salary between min_salary and max_salary where salary > (select salary from employees where emp_name='ADELYN') and hire_date < (select hire_date from employees where emp_name='FRANK') and dep_id in (select dep_id from department where dep_name in ('FINANCE','AUDIT')) and grade in (3,4);
+
+-- 130. Write a SQL query to find those employees whose designation is same as the designation of SANDRINE or ADELYN. Return complete information about the employees.
+select * from employees where job_name in (select job_name from employees where emp_name in ('SANDRINE','ADELYN'));
+
+-- 131. Write a SQL query to list any job of department ID 1001 which are not found in department ID 2001. Return job name.
+select job_name from employees where dep_id=1001 and job_name not in (select job_name from employees where dep_id=2001);
+
+-- 132. Write a SQL query to find the highest paid employee. Return complete information about the employees.
+select * from employees where salary = (select max(salary) from employees);
+
+-- 133. Write a SQL query to find the highest paid employees in the department MARKETING. Return complete information about the employees.
+select * from employees where salary = (select max(salary) from employees where dep_id=(select dep_id from department where dep_name='MARKETING'));
+
+-- 134. Write a SQL query to find the employees of grade 3  and location at PERTH. Return employee ID, employee name, job name, hire date, and salary.
+select emp_id, emp_name, job_name, hire_date, salary from employees join salary_grade on salary between min_salary and max_salary and grade=3 join department on employees.dep_id=department.dep_id and dep_location='PERTH';
+
+-- 135. Write a SQL query to find those employees who are senior to the employee who work under KAYLING. Return complete information about the employees.
+select * from employees where hire_date < all (select hire_date from employees where manager_id=(select emp_id from employees where emp_name='KAYLING'));
+
+-- 136. Write a SQL query to find those employees of grade 3 to 5 and location at SYDNEY. The employees are not in PRESIDENT designated and salary is more than the highest paid employee of PERTH where no MANAGER and SALESMAN are working under KAYLING. Return complete information about the employees.
+select max(salary) from employees where manager_id <> (select emp_id from employees where emp_name='KAYLING') and job_name in ('MANAGER','SALESMAN') and dep_id in (select dep_id from department where dep_location='PERTH');
+
+-- 137. Write a SQL query to find those employees who are senior employees as of year 1991 (Consider only 1991). Return complete information about the employees.
+select * from employees where hire_date in (select min(hire_date) from employees where date_format(hire_date,'%Y')='1991');
+
+-- 138. Write a SQL query to find those employees who joined in 1991 in a designation same as the most senior person of the year 1991. Return complete information about the employees.
+select * from employees where date_format(hire_date,'%Y')='1991' and job_name in (select job_name from employees where hire_date in (select min(hire_date) from employees where date_format(hire_date,'%Y')='1991'));
+
+-- 139. Write a SQL query to find the most senior employee of grade 4 or 5, work under KAYLING. Return complete information about the employees.
+select emp_id, emp_name, job_name, manager_id, hire_date, salary, commission from employees join salary_grade on salary between min_salary and max_salary and grade in (4,5) where manager_id = (select emp_id from employees where emp_name='KAYLING') and hire_date = (select min(hire_date) from employees join salary_grade on salary between min_salary and max_salary and grade in (4,5) where manager_id = (select emp_id from employees where emp_name='KAYLING'));
